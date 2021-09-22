@@ -107,7 +107,7 @@ $ docker-compose down
     command: gunicorn config.wsgi -b 0.0.0.0:8000 # new <br>
    <hr>
    
-   <b> docker-prod-compose.yml </b>
+   <b> docker-compose-prod.yml </b>
   <hr>
    # command: python /code/manage.py runserver 0.0.0.0:8000 <br>
     command: gunicorn config.wsgi -b 0.0.0.0:8000 # new <br>
