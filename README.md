@@ -79,6 +79,43 @@ $ docker-compose exec web python manage.py collectstatic <br>
  <hr>
  </div>
 بعد از اجرای دستور بالا یک اخطار در مورد بازنویسی فایل ‌های موجود نمایش داده خواهد شد، که مشکلی از این بابت وجود ندارد. yes را  تایپ کرده و روی دکمه Enter کلیک کنید تا ادامه یابد.
-  
+ <h2> Media Files  </h2>  
+   متاسفانه <a href="http://whitenoise.evans.io/en/stable/django.html#serving-media-files">white-noise </a> عملکرد خوبی در مواجه با فایل‌های چندرسانه‌ای آپلود شده توسط کاربران ندارد. کاورهای کتاب ما توسط جنگو ادمین اضافه شده است ولی عمکلرد آن شبیه به فایل های آپلود شده توسط کاربران می‌باشد. در نتیجه، در حالی که در توسعه لوکال به صورت دلخواه ظاهر می‌شوند، ولی در تنظیمات محیط پروداکشن  ظاهر نمی‌شوند.
+رویکرد پیشنهادی استفاده از پکیج محبوب django-storage در کنار یک CDN اختصاصی مانند S3 می‌باشد.  این رویکرد نیازمند پیکره‌بندی‌های اضافی که توضیحات مربوط به آن، خارج از محدوده کتاب می‌باشد.  
+ 
+  <h2> Gunicorn  </h2>  
+  وقتی ما در فصل سوم دستور startproject را اجرا کردیم، فایل wsgi.py با پیکره بندی‌ های پیش فرض WGSI (Web Server Gateway Interface) ساخته شد. این مشخصات برای ارتباط بین وب اپ ساخته شده (مانند پروژه فروشگاه کتاب آنلاین) با وب سرور استفاده می‌گردد.
+برای محیط پروداکشن رایج است که از Gunicorn یا  uWSGI به جایWGSI پیش‌فرض استفاده کنیم، هر دو این‌ها باعث بهبود عمکلرد می‌گردند ولی به دلیل سادگی در پیاده سازی انتخاب ما Gunicorn  می‌باشد.
 
+مرحله اول نصب پکیج Gunircorn در پروژه و سپس متوقف کردن کانتینرها می‌باشد:
+   
+ <div dir="ltr" >
+  
+  <hr>
+  $ docker-compose exec web pipenv install gunicorn==20.0.4 <br>
+$ docker-compose down
+<hr>
+  
+ </div>
+ 
+ از آنجا که ما از داکر استفاده می‌کنیم، محیط لوکال ما می‌توانید نقش محیط پروداکشن را به خوبی ایفا کند،‌ بنابراین ما هر دو فایل docker-compose.yml و docker-compose-prod.yml را برای استفاده از Gunicorn به جای وب سرورقبلی، به روز رسانی می‌کنیم.
+
+  <div dir="ltr" >
+  <b> docker-compose.yml </b>
+  <hr>
+   # command: python /code/manage.py runserver 0.0.0.0:8000 <br>
+    command: gunicorn config.wsgi -b 0.0.0.0:8000 # new <br>
+   <hr>
+   
+   <b> docker-prod-compose.yml </b>
+  <hr>
+   # command: python /code/manage.py runserver 0.0.0.0:8000 <br>
+    command: gunicorn config.wsgi -b 0.0.0.0:8000 # new <br>
+   <hr>
+
+ </div>
+ حال مجدد کانتینر را اجرا می‌کنیم تا دوباره ایمیج جدید به همراه پکیج Gunicorn و همچنین متغیرهای محلی ساخته شود.
+ 
+ 
+  
 </div>
