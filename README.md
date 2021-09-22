@@ -217,9 +217,144 @@ Creating app... done, â¬¢ fast-ravine-89805 <br>
 https://fast-ravine-89805.herokuapp.com/ <br>
 https://git.heroku.com/fast-ravine-89805.git <br>
    <hr>
+    
+ </div>
+     در این مورد  Heroku نام fast-ravin-89805 را به اپ من اختصاص داده است. اگر  داشبورد مدیریتی Heroku را رفرش کنیم، اپی که به تازگی ساخته شده است را مشاهده خواهیم کرد. روی اپ جدید کلیک کنید تا صفحه "Overview" باز شود
+<br>
+ <img src="https://github.com/Mimshimzim/dfp_deployment/blob/main/1.png" alt="Heroku Overview Page">
+ 
+ مرحله بعدی، اضافه کردن متغیرهای محلی مربوط به محیط پروداکشن می‌باشد. در بالای صفحه روی "Settings" کلیک کرده و سپس روی "Reveal Config Vars" کلیک نمایید. به دلیل این که ما به صورت کلی  از مقادیر پیش فرض‌ در متغیرها استفاده می‌کنیم، فقط مقادیر دو متغیر DJANGO_SECRET_KEY و  DJANGO_ALLOWED_HOSTS را تنظیم خواهیم کرد.
+از آنجا که ما فقط نام دامنه fast-ravine-89805.herokuapp.com را برای سایت پروداکشن مشخص کرده ایم، برای بالا بردن میزان امنیت، در ALLOWED_HOSTS آن را اضافه می‌کنیم.
+ <br>
+ <img src="https://github.com/Mimshimzim/dfp_deployment/blob/main/2.png" >
+ 
+ همچنین امکان اضافه کردن متغیرهای مربوط به پیکره‌بندی از طریق دستورات  نیز وجود دارد. هر دو رویکرد عملی می‌باشد.
+ 
+ حالا باید <a href="https://devcenter.heroku.com/articles/stack"> stack</a> را برای استفاده از کانتینر  داکر به جای buildpack که به صورت پیش فرض در Heroku استفاده می‌شود، تنظیم کنیم. نام اپ را نیز به انتهای دستور stack:set  container -a اضافه کنید.
+ 
+  <div dir="ltr" >
+  <b> Command Line </b>
+  <hr>
+$ heroku stack:set container -a fast-ravine-89805 <br>
+Setting stack to container... done   <hr>
   
-    در این مورد  Heroku نام fast-ravin-89805 را به اپ من اختصاص داده است. اگر  داشبورد مدیریتی Heroku را رفرش کنیم، اپی که به تازگی ساخته شده است را مشاهده خواهیم کرد. روی اپ جدید کلیک کنید تا صفحه "Overview" باز شود
 
  </div>
+ 
+ برای اطمینان از اجرای درست تغییرات، صفحه داشبورد مدیریتی Heroku را یک بار رفرش کنید.  حال در بخش "info"،  قسمت "Stack" مقدار آن برابر"Container" باشد. 
+ 
+  <img src="https://github.com/Mimshimzim/dfp_deployment/blob/main/3.png" >
+
+ قبل از ارسال کده های مان به Heroku، پایگاه داده PostgreSQL میزبان را مشخص کنید. در مورد ما، نسخه رایگان hobby-dev به خوبی کار می‌کند. همچنین قابلیت آپدیت در آینده را دارد.
+ 
+  <div dir="ltr" >
+  <b> Command Line </b>
+  <hr>
+$ heroku addons:create heroku-postgresql:hobby-dev -a fast-ravine-89805 <br>
+Creating heroku-postgresql:hobby-dev on â¬¢ fast-ravine-89805... free <br>
+Database has been created and is available <br>
+! This database is empty. If upgrading, you can transfer <br>
+! data from another database with pg:copy <br>
+Created postgresql-curved-34718 as DATABASE_URL <br>
+Use heroku addons:docs heroku-postgresql to view documentation <br>
+   <hr>
+  
+
+ </div>
+ آیا متوجه شدید متغیر DATABASE_URL چگونه به صورت خودکار تولید شد. این همان دلیلی است که  ما مجبور نبودیم این متغیر را در محیط پروداکشن تنظیم کنیم.
+<br>
+ <br>
+ما آماده ایم! با ساخت یک Heroku ریموت، یک نسخه از کدهای ما در سرورهای میزبان Heroku وجود خواهد داشت. مطمئن شوید     a- و نام اپ وجود داشته باشد، سپس کدها رو به Heroku ارسال کنید که نتیجه آن ساخت ایمیج و کانتینر داکری خواهد بود.
+ 
+  <div dir="ltr" >
+  <b> Command Line </b>
+  <hr>
+$ heroku git:remote -a fast-ravine-89805 <br>
+set git remote heroku to https://git.heroku.com/fast-ravine-89805.git <br>
+$ git push heroku master  <br>
+   
+ <hr>
+  
+
+ </div>
+ 
+ ارسال اولیه ممکن است کمی طول بکشد. شما می‌توانید با کلیک رو تب "Activity" در داشبورد مدیریتی Heroku، میزان پیشرفت هر فعالیت را مشاهده کنید.
+
+حال پروژه فروشگاه کتاب ما  به صورت  آنلاین در دسترس می‌باشد.به خاطر داشته باشید در حالی که کدهای ما دقیقا در Heroku کپی شده است، ولی پروژه ما در محیط پروداکشن دارای پایگاه داده مخصوص به خود می‌باشد که در حال حاضر هیچ داده‌ای داخل آن قرار ندارد. برای اجرا دستورات در Heroku باید heroku  run را اجرا کنید. برای مثال ما باید پایگاه داده اولیه را migrate کرده و سپس یک اکانت superuser بسازیم.
+ 
+  <div dir="ltr" >
+  <b> Command Line </b>
+  <hr>
+$ heroku run python manage.py migrate <br>
+$ heroku run python manage.py createsuperuser 
+   <hr>
+  
+
+ </div>
+ 
+ دو راه برای باز کردن اپلیکیشن تازه مستقر شده وجود دارد. راه حل اول از طریق command line و تایپ کردن دستور heroku  open  -a  و سپس نام اپ و راه حل دوم  روی دکمه "Open app" در گوشه بالا سمت راست داشبورد مدیریتی Heroku کلیک کنید.
+ 
+  <div dir="ltr" >
+  <b> Command Line </b>
+  <hr>
+$ heroku open -a fast-ravine-89805  
+   
+   <hr>
+  
+
+ </div>
+ 
+  <img src="https://github.com/Mimshimzim/dfp_deployment/blob/main/4.png" >
+ 
+ بعد از باز کردن اپ، با خطای ریدایرکت روبه‌رو می‌شویم!
+ 
+ <h2> SECURE_PROXY_SSL_HEADER </h2>
+ بررسی‌های دقیق نشان می‌دهد که این مشکل مربوط به تنظیمات <a href="https://docs.djangoproject.com/en/3.1/ref/settings/#secure-ssl-redirect" >SECURE_SSL_REDIRECT</a> می‌باشد. Heroku از پروکسی‌ها استفاده می‌کند، پس ما باید هدر مربوطه را پیدا کرده و  هدر<a href="https://docs.djangoproject.com/en/3.1/ref/settings/#std:setting-SECURE_PROXY_SSL_HEADER" > SECURE_PROXY_SSL_HEADER </a> را آپدیت کنیم.
+به صورت پیش فرض هدر ذکر شده برابر None می‌باشد، به دلیل اعتمادی که به Heroku داریم مقدار آن را برابر 
+('HTTP_X_FORWARDED_PROTO', 'https')
+این تنظیمات باعث آسیب به توسعه لوکال ما نشده و ما می‌توانیم به صورت مستقیم آن را در مسیر config/settings.py قرار دهیم:
+
+  <div dir="ltr" >
+  <b> Code </b>
+  <hr>
+# config/settings.py <br>
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') # new   <hr>
+  
+
+ </div>
+ 
+ تغییرات را در گیت commit کرده و سپس کدهای به روز شده را به Heroku انتقال دهید:
+ 
+  <div dir="ltr" >
+  <b> Command Line </b>
+  <hr>
+$ git status <br>
+$ git commit -m 'secure_proxy_ssl_header and allowed_hosts update'<br>
+$ git push heroku master   <hr>
+  
+
+ </div>
+ 
+ بعد از پایان ساخت اپ، صفحه وب را رفرش کنید تا سایت خود را مشاهده کنید!
+ 
+  <img src="https://github.com/Mimshimzim/dfp_deployment/blob/main/5.png" >
+
+ 
+ <h2> Heroku Logs </h2>
+ 
+ بسیار معمول است که گاهی اوقات شما هنگام استقرار اپ با خطاهایی مواجه شوید. کافی است شما دستور heroku  logs  --tail  را وارد کنید تا  لاگ های مربوط به خطا‌ها، اطلاعات و دیباگ را مشاهده کنید.
+امیدوارم روند استقرار بدون مشکل انجام شود، ولی در عمل حتی در سرویس‌های پلتفرمی (PaaS) مانند Heroku نیز، ممکن است مشکلاتی پیش آید. اگر شما صفحه خطا را مشاهده کردید، دستور heroku  logs  -tail را تایپ کنید تا خطاها را مشاهده کرده و مشکل را تشخیص دهید.
+ 
+ <h2> Heroku Add-ons </h2>
+ 
+   Heroku دارای لیست بزرگی   سرویس‌های افزونه ای می‌باشد که با پرداخت هزینه آن ، به سرعت می‌توانید آن را به سایت خود اضافه کنید.
+  برای مثال، برای فعالسازی کشینگ با Memcache، افزونه <a href="https://elements.heroku.com/addons/memcachier" >Memcachier  </a> نیاز است.
+  پشتیبان گیری روزانه اختیاری می‌باشد ولی یک ویژگی ضروری برای پایگاه‌داده‌های محیط پروداکشن می‌باشد.
+  اگر شما از یک دامنه اختصاصی برای سایت خودتان استفاده می‌کنید، اطمینان از گواهینامه SSL برای هر وبسایتی حیاتی می‌باشد، برای فعال کردن این قابلیت،‌شما باید در یک لایه غیررایگان قرار داشته باشید.
+ 
+ <h2> Conclusion </h2>
+   کدهای بسیار زیادی در فصل وجود داشت، اگر با مشکلی رو‌به‌رو شدید،‌ لطفا  official source code on Github را چک کنید.
+  حتی با وجود مزایای بسیاری که سرویس‌هایی پلتفرمی(PaaS) مانند Heroku دارند، استقرار یک کار پیچیده و خسته کننده برای توسعه دهندگان ‌می‌باشد. من شخصا، نیاز دارم که سایت من فقط کار کند، ولی اغلب مهندسان از چالش های ایجاد شده برای بهبود در عملکرد، امنیت و مقیاس پذیری  لذت می‌برند.
+  اندازه گیری پیشرفت  سایت بسیار آسان می‌باشد: آیا سرعت سایت افزایش یافته است؟ آیا سایت همیشه در دسترس است؟ آیا امنیت آن به روزرسانی شده است؟ کار کردن روی این مشکلات اغلب بهتر از اضافه کردن قابلیت جدید به سایت می‌باشد.
  
 </div>
