@@ -26,6 +26,7 @@
 در محله اول اقدام به نصب پکیج whitenoise در داکر و همچنین اقدام به توقف کانتینر خواهیم کرد:
  </div>
   <div dir="ltr">
+     <b> Command Line </b>
  <hr>
 $ docker-compose exec web pipenv install whitenoise==5.1.0 <br>
 $ docker-compose down <br>
@@ -35,7 +36,8 @@ $ docker-compose down <br>
 تا زمانی که که از داکر استفاده می‌کنیم، امکان تغییر به whitenoise به صورت لوکالی همانند محیط پروداکشن را داریم. در حالی که  می‌توان با ست کردن آرگومان nostatic-- این کار را انجام داد،‌ولی در عمل این کار خسته کننده خواهد بود. رویکرد بهتر این می‌باشد که در پیکره بندی INSTALLED_APPS  دستور whitenoise.runserver_nostatic را قبل از django.contrib.staticfiles  اضافه کنیم.
   ما همچنین برای استفاده از whitenoise پیکره بندی ‌های  آن را در بخش MIDDLEWARE دقیقا پایین خط SecurityMiddleware  و  بخش STATICFILES_STORAGE اضافه می ‌کنیم.
  <div dir ="ltr">
- <hr>
+    <b> Code </b>
+  <hr>
  config/settings.py <br>
 INSTALLED_APPS = [ <br>
 'django.contrib.admin',<br>
@@ -63,6 +65,7 @@ STATICFILES_STORAGE = <br>
   با انجام تغییرات، ما می‌توانیم پروژه را در حالت توسعه به صورت لوکال اجرا کنیم.
   </div>
 <div dir="ltr">
+   <b> Command Line </b>
  <hr>
  
 $ docker-compose up -d --build <br>
@@ -72,6 +75,8 @@ $ docker-compose up -d --build <br>
 پکیج whitenoise دارای ویژگی‌های خاص برای ارائه محتوا ‌ به صورت فشرده  و همچنین دارای هدرهایی برای کشینگ محتوا داشته، که تغییر نخواهند کرد. اما الان یک بار دیگه دستور collectstatic را مجدد اجرا می‌کنیم:
 
 <div dir="ltr" >
+   <b> Command Line </b>
+  
  <hr>
  
 $ docker-compose exec web python manage.py collectstatic <br>
@@ -90,7 +95,7 @@ $ docker-compose exec web python manage.py collectstatic <br>
 مرحله اول نصب پکیج Gunircorn در پروژه و سپس متوقف کردن کانتینرها می‌باشد:
    
  <div dir="ltr" >
-  
+    <b> Command Line </b>
   <hr>
   $ docker-compose exec web pipenv install gunicorn==20.0.4 <br>
 $ docker-compose down
@@ -116,6 +121,105 @@ $ docker-compose down
  </div>
  حال مجدد کانتینر را اجرا می‌کنیم تا دوباره ایمیج جدید به همراه پکیج Gunicorn و همچنین متغیرهای محلی ساخته شود.
  
+ <div dir="ltr" >
+  <b> Command Line </b>
+  <hr>
+   $ docker-compose up -d  --build
+   <hr>
+    
+
+ </div>
+ <h2> Heroku </h2>
+ وارد وبسایت Heroku شده  و به صورت رایگان ثبت نام کنید.بعد تایید ایمیل، Heroku شما رو به داشبورد مدیریتی منتقل خواهد کرد.
+سپس مطمئن شوید CLI (Command Line Interface) مربوط به Heroku را نصب کنید تا بتوانیم از طریق command line "استقرار را انجام دهیم.
+ <a href="https://devcenter.heroku.com/articles/getting-started-with-python#set-up" > جزئیات نصب </a>
+ <br>
+ مرحله اخر، ورود با مشخصات کاربری  از طریق command line با تایپ دستور heroku login می‌باشد. از ایمیل و رمزعبوری که برای ساخت اکانت در Heroku استفاده کرده‌اید، برای لاگین  استفاده کنید.
  
+ <div dir="ltr" >
+  <b> Command Line </b>
+  <hr>
+     $ heroku login
+   <hr>
   
+
+ </div>
+ <h2> Deploying  with Docker </h2>
+  حال با ما دو انتخاب رو‌به‌رو هستیم:  استقرار از طریق راه حل پیشین یا با استفاده از کانتینر داکر. مورد اخر(استفاده از کانتینر داکر) یک رویکرد جدید در Heroku و دیگر ارائه دهندگان خدمات هاستینگ می‌باشد که به تازگی اضافه شده است. همانطور که داکر  توسعه لوکال را بر عهده گرفته بود، استقرار را نیز بر عهده خواهد گرفت.  اگر شما یک بار پیکره‌بندی های لازم برای استقرار کانتینر را انجام دهید، تعویض هاستینگ بسیار ساده تری در مقایسه با روش ها معمول هر هاستینگ خواهید داشت.  پس ما استقرار را با استفاده از کانتینرهای داکر انجام خواهیم داد.
+ با این حال ما با یک انتخابی دیگر در بین ویژگی ها کانتینرها، روبه‌رو هستیم: استفاده از ایمیج ها از پیش ساخته شده موجود در داکر رجیستری( مانند داکرهاب) و یا افزودن فایل <a href="https://devcenter.heroku.com/articles/build-docker-images-heroku-yml" >heroku.yml.</a> 
+  به دلیل اجازه استفاده از دستورات بیشتر و همچنین شباهت بیشتر به رویکرد پیشین  Heroku با استفاده از Procfile در پیکره‌بندی، از رویکرد دوم استفاده خواهیم کرد.
+ 
+ <h2> heroku.yml </h2>
+ در استقرارهای غیرداکری Heroku، از فایل Procfile برای استقرار یک سایت استفاده می‌کنیم، برای کانتینرهای Heroku نیز از یک رویکر مشابه استفاده می‌کنیم، در این رویکرد یک فایل سفارشی با نام heroku.yml در دایرکتوری root ساخته می‌شود. این فایل شبیه فایل docker-compose.yml ای که برای ساخت کانتینر در محیط توسعه لوکال استفاده می‌کردیم، می‌باشد.
+  
+ با دستور زیر فایل heroku.yml را می‌سازیم.
+ 
+  <div dir="ltr" >
+  <b> Command Line </b>
+  <hr>
+        $ touch  heroku.yml  
+   
+   <hr>
+  
+ </div>
+ این فایل دارای چهار قسمت نصب (setup), ساخت(build),انتشار (release) و اجرا(run) می باشد. وظیفه اصلی بخش نصب، مشخص کردن افزونه‌های مورد نیاز می‌باشد.معمولا این افزونه ها توسط Heroku  با پرداخت هزینه ارائه می‌شود. بزرگترین آن پایگاه داده ما بوده، که روی افزونه رایگان heroku-postgresql قرار دارد. Heroku با ارائه سرویس و به‌روزرسانی‌های امنیتی آن باعث می‌شود ما به راحتی سایز و دسترسی پذیری سرویس را بر اساس نیاز ارتقا دهیم.
+ 
+ <br>
+ 
+ بخش ساخت (build) مشخص می‌کنیم که فایل Dockerfile چگونه باید  ساخته شود، این به فایل Dockerfile  که در دایرکتوری root قرار دارد، بستگی دارد.
+ 
+ مرحله انتشار برای انجام وظایف  قبل از انتشار نسخه جدید، کاربرد دارد. برای مثال، ما باید مطمئن شویم که collectstatic در هر دیپلوی به صورت خودکار اجرا می‌گردد.
+ 
+ در نهایت در مرحله اجرا، ما مشخص می‌کنیم که کدام پروسس باید اپلیکیشن را اجرا کند، به ویژه استفاده از Gunircorn به عنوان وب سرور.
+ 
+  <div dir="ltr" >
+  <b> heroku.yml </b>
+  <hr>
+setup: <br>
+   addons: <br>
+       - plan: heroku-postgresql <br>
+build: <br>
+   docker: <br>
+       web: Dockerfile <br>
+release: <br>
+     image: web <br>
+     command: <br>
+       - python manage.py collectstatic --noinput<br>
+run: <br>
+      web: gunicorn config.wsgi <br>
+   <hr>
+  
+
+ </div>
+ 
+ مطمئن شوید که آپدیت‌های‌ جدید مربوط به دیپلوی را به گیت اضافه کرده و آن را کامیت کنید. در مرحله بعدی ما کدهای موجود در محیط لوکال را به Heroku ارسال خواهیم کرد.
+ 
+  <div dir="ltr" >
+  <b> Command Line </b>
+  <hr>
+ $ git status <br>
+$ git add . <br>
+$ git commit -m 'ch17'
+   
+   <hr>
+  
+
+ </div>
+ 
+ <h2> Heroku Deployment </h2>
+ حال یک اپ جدید برای پروژه فروشگاه کتاب ایجاد می‌کنیم. اگر شما عبارت heroku create را تایپ کنید، Heroku یک نام تصادفی به اپ اختصاص خواهد داد. تا زمانی که اسامی در Heroku به صورت سراسری می‌باشند، امکان استفاده از اسامی معمول مانند "blog"  یا "webapp" وجود ندارد. نام اپ می‌تواند همیشه در داخل Heroku تغییر یابد تا در فضای نام‌ سراسری در دسترس باشد.
+ 
+   <div dir="ltr" >
+  <b> Command Line </b>
+  <hr>
+$ heroku create <br>
+Creating app... done, â¬¢ fast-ravine-89805 <br>
+https://fast-ravine-89805.herokuapp.com/ <br>
+https://git.heroku.com/fast-ravine-89805.git <br>
+   <hr>
+  
+    در این مورد  Heroku نام fast-ravin-89805 را به اپ من اختصاص داده است. اگر  داشبورد مدیریتی Heroku را رفرش کنیم، اپی که به تازگی ساخته شده است را مشاهده خواهیم کرد. روی اپ جدید کلیک کنید تا صفحه "Overview" باز شود
+
+ </div>
+ 
 </div>
